@@ -79,8 +79,9 @@ extend-ignore =
     U101,
     # Unused argument starting with an underscore
 
-exclude = .git,__pycache__
+exclude = .git,__pycache__,vendor/*
 max-line-length = 120
+known-modules = :[vendor,AlbertoX3]
 per-file-ignores =
     tests/test_*.py:ANN201
     AlbertoX3/__main__.py:DAL000

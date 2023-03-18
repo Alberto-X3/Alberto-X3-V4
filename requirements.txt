@@ -1,0 +1,2 @@
+# all vendored requirements
+-r vendor/requirements.txt

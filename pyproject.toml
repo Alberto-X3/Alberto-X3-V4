@@ -5,3 +5,8 @@ include = '\.pyi?$'
 
 [tool.pyright]
 exclude = ['vendor']
+pythonVersion = '3.11'
+pythonPlatform = 'All'
+
+reportMissingModuleSource = 'none'
+reportMissingImports = 'none'

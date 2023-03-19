@@ -1,6 +1,4 @@
-from vendor.AlbertUnruhUtils.utils.logger import get_logger
+from AlbertoX3 import __root_logger__
 
 
-logger = get_logger(None, level=0)
-
-logger.info("This code has no functionality by now!")
+__root_logger__.info("This code has no functionality by now!")

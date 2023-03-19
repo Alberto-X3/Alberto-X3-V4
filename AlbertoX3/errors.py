@@ -9,6 +9,8 @@ __all__ = (
     "TranslationError",
     "UnsupportedTranslationTypeError",
     "UnsupportedLanguageError",
+    "DatabaseError",
+    "NoActiveSessionError",
 )
 
 
@@ -110,3 +112,12 @@ class UnsupportedLanguageError(TranslationError):
 
     def __str__(self) -> str:
         return f"Unsupported language {self.language!r}! Supported languages are: {', '.join(self.supported)}"
+
+
+class DatabaseError(AlbertoX3Error):
+    pass
+
+
+class NoActiveSessionError(DatabaseError):
+    def __str__(self) -> str:
+        return "There is no active database session in this context!"

@@ -52,6 +52,7 @@ from .environment import (
     REDIS_PASSWORD,
 )
 from ._utils_essentials import get_logger
+from .errors import NoActiveSessionError
 
 
 T = TypeVar("T")
@@ -258,12 +259,12 @@ class DB:
     @property
     def session(self) -> AsyncSession:
         if (session := self._session.get()) is None:
-            raise Exception  # ToDo: Exception in .errors
+            raise NoActiveSessionError
         return session
 
     async def wait_for_close_event(self) -> None:
         if (event := self._close_event.get()) is None:
-            raise Exception  # ToDo: Exception in .errors
+            raise NoActiveSessionError
         await event.wait()
 
 

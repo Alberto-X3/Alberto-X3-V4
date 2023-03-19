@@ -31,11 +31,11 @@ class SettingsModel(Base):
     @staticmethod
     @LockDeco
     async def get(dtype: type[_VALUE], key: str, default: _VALUE) -> _VALUE:
-        if (out := await redis.get(rkey := f"settings:{key}")) is None:
+        if (out := await redis.execute_command("GET", rkey := f"settings:{key}")) is None:
             if (row := await db.get(SettingsModel, key=key)) is None:
                 row = await SettingsModel._create(key, default)
             out = cast(_VALUE, row.value)
-            await redis.setex(rkey, CACHE_TTL, out)
+            await redis.execute_command("SETEX", rkey, CACHE_TTL, out)
 
         return dtype(int(out) if dtype is bool else out)
 
@@ -45,11 +45,11 @@ class SettingsModel(Base):
         rkey = f"settings:{key}"
         if (row := await db.get(SettingsModel, key=key)) is None:
             row = await SettingsModel._create(key, value)
-            await redis.setex(rkey, CACHE_TTL, cast(str, row.value))
+            await redis.execute_command("SETEX", rkey, CACHE_TTL, cast(str, row.value))
             return row
 
         row.value = str(int(value) if dtype is bool else value)
-        await redis.setex(rkey, CACHE_TTL, row.value)
+        await redis.execute_command("SETEX", rkey, CACHE_TTL, row.value)
         return row
 
 

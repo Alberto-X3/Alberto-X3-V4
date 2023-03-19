@@ -12,7 +12,7 @@ import sys
 from aenum import Enum
 from collections import namedtuple
 from contextvars import ContextVar
-from interactions.models.discord.user import BaseUser
+from interactions.models.discord.user import Member, User
 from interactions.models.internal.command import check
 from interactions.models.internal.context import BaseContext
 from sqlalchemy.sql.schema import Column
@@ -38,18 +38,18 @@ class PermissionModel(Base):
 
     @staticmethod
     async def get(permission: str, default: int) -> int:
-        if (value := await redis.get(rkey := f"permissions:{permission}")) is not None:
+        if (value := await redis.execute_command("GET", rkey := f"permissions:{permission}")) is not None:
             return int(value)
 
         if (row := await db.get(PermissionModel, permission=permission)) is None:
             row = await PermissionModel.create(permission=permission, level=default)
 
-        await redis.setex(rkey, CACHE_TTL, cast(int, row.level))
+        await redis.execute_command("SETEX", rkey, CACHE_TTL, cast(int, row.level))
         return cast(int, row.level)
 
     @staticmethod
     async def set(permission: str, level: int) -> "PermissionModel":  # noqa A003
-        await redis.setex(f"permissions:{permission}", CACHE_TTL, level)
+        await redis.execute_command("SETEX", f"permissions:{permission}", CACHE_TTL, level)
 
         if (row := await db.get(PermissionModel, permission=permission)) is None:
             row = await PermissionModel.create(permission=permission, level=level)
@@ -75,7 +75,8 @@ class BasePermission(Enum):
     def _default_level(self) -> "BasePermissionLevel":
         from .constants import Config
 
-        return Config.PERMISSION_DEFAULT_OVERRIDES.get(self.ext, {}).get(self.name, Config.PERMISSION_DEFAULT_LEVEL)
+        defaults = cast(dict[str, dict[str, BasePermissionLevel]], Config.PERMISSION_DEFAULT_OVERRIDES)
+        return defaults.get(self.ext, {}).get(self.name, Config.PERMISSION_DEFAULT_LEVEL)
 
     async def resolve(self) -> "BasePermissionLevel":
         from .constants import Config
@@ -89,7 +90,7 @@ class BasePermission(Enum):
     async def set(self, level: "BasePermissionLevel") -> None:  # noqa A003
         await PermissionModel.set(self.fullname, level.level)
 
-    async def check_permissions(self, user: BaseUser) -> bool:
+    async def check_permissions(self, user: Member | User) -> bool:
         return await (await self.resolve()).check_permissions(user)
 
     @property
@@ -122,17 +123,17 @@ class BasePermissionLevel(Enum):
         return self.value.roles
 
     @classmethod
-    async def get_permission_level(cls, user: BaseUser) -> "BasePermissionLevel":
+    async def get_permission_level(cls, user: Member | User) -> "BasePermissionLevel":
         if override := permission_override.get(None):
             return override
 
         return await cls._get_permission_level(user)
 
     @classmethod
-    async def _get_permission_level(cls, user: BaseUser) -> "BasePermissionLevel":
+    async def _get_permission_level(cls, user: Member | User) -> "BasePermissionLevel":
         raise NotImplementedError
 
-    async def check_permissions(self, user: BaseUser) -> bool:
+    async def check_permissions(self, user: Member | User) -> bool:
         level: BasePermissionLevel = await self.get_permission_level(user)
         return level.level >= self.level
 
@@ -147,7 +148,7 @@ class BasePermissionLevel(Enum):
 
 def check_permission_level(level: BasePermission | BasePermissionLevel) -> Callable[[BaseContext], Awaitable[bool]]:
     async def inner(ctx: BaseContext) -> bool:
-        user: BaseUser = ctx.author
+        user = ctx.author
         if not await level.check_permissions(user):
             return False
         return True

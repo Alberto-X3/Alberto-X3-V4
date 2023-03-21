@@ -153,6 +153,7 @@ def get_lib_version() -> str:
 
 
 def get_extensions(folder: Absent[Path] = MISSING) -> set[PrimitiveExtension]:
+    # ToDo: /!\ /!\ rework extension format! /!\ /!\
     if folder is MISSING:
         folder = Config.EXTENSIONS_FOLDER
 

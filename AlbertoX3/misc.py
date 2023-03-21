@@ -52,6 +52,7 @@ class ExtensionFeaturesGenerator(ABC):
 
 
 class PrimitiveExtension(ExtensionFeaturesGenerator):
+    # ToDo: /!\ /!\ rework extension format! /!\ /!\
     name: str
     package: str
     path: Path

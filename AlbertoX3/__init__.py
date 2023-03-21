@@ -18,6 +18,7 @@ from .database import *
 from .enum import *
 from .environment import *
 from .errors import *
+from .ipy_wrapper import *
 from .misc import *
 from .permission import *
 from .settings import *

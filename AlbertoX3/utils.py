@@ -166,7 +166,7 @@ def get_extensions(folder: Absent[Path] = MISSING) -> set[PrimitiveExtension]:
                 continue
 
             features = {f for f in py_files if f in EXTENSION_FEATURES}
-            extensions.add(PrimitiveExtension(group=group.name, name=ext.name, path=ext, has=features))
+            extensions.add(PrimitiveExtension(group=group.name, name=ext.name, path=ext, has=features))  # type: ignore
 
     return extensions
 

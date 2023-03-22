@@ -153,25 +153,20 @@ def get_lib_version() -> str:
 
 
 def get_extensions(folder: Absent[Path] = MISSING) -> set[PrimitiveExtension]:
-    # ToDo: /!\ /!\ rework extension format! /!\ /!\
     if folder is MISSING:
         folder = Config.EXTENSIONS_FOLDER
 
     extensions: set[PrimitiveExtension] = set()
 
-    for ext in folder.iterdir():
-        if not ext.is_dir():
-            continue
-        py_files = [e.name.removesuffix(".py") for e in ext.iterdir() if e.is_file() and e.name.endswith(".py")]
-        if not ext.is_dir():
-            # isn't a directory
-            continue
-        if "__init__" not in py_files:
-            # isn't a package
-            continue
+    for group in filter(Path.is_dir, folder.iterdir()):
+        for ext in filter(Path.is_dir, group.iterdir()):
+            py_files = [e.name.removesuffix(".py") for e in ext.iterdir() if e.is_file() and e.name.endswith(".py")]
+            if "ext" not in py_files:
+                # isn't a valid extension
+                continue
 
-        features = {f for f in py_files if f in EXTENSION_FEATURES}
-        extensions.add(PrimitiveExtension(name=ext.name, package=f"{folder.name}.{ext.name}", path=ext, has=features))
+            features = {f for f in py_files if f in EXTENSION_FEATURES}
+            extensions.add(PrimitiveExtension(group=group.name, name=ext.name, path=ext, has=features))
 
     return extensions
 

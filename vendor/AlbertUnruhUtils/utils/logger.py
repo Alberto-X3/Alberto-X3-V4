@@ -1,4 +1,4 @@
-# copy of
+# modified copy of
 # https://github.com/AlbertUnruh/AlbertUnruhUtils.py/blob/18f075888227b5cecfa385d86b7c721c17c79570/AlbertUnruhUtils/utils/logger.py
 
 __all__ = ("get_logger",)
@@ -41,7 +41,8 @@ _LOG_LEVEL_STR = typing.Literal[
     "DEBUG",
     "NOTSET",
 ]
-_F = ColorStr("\033[COLOR-CODEm{asctime} \t{name: <15} {levelname: <10}\t{message}\033[0m")
+# _F = ColorStr("\033[COLOR-CODEm{asctime} \t{name: <15} {levelname: <10}\t{message}\033[0m")  # original
+_F = ColorStr("\033[COLOR-CODEm{asctime} \t{name: <20} {levelname: <10}\t{message}\033[0m")
 _logging_formatter = Formatter(_F, style="{")
 _logging_handler = StreamHandler(sys.stdout)
 _logging_handler.setFormatter(_logging_formatter)

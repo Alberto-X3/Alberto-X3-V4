@@ -14,7 +14,7 @@ from typing import Callable, Iterable, Literal
 from ._utils_essentials import get_logger
 
 
-logger = get_logger(__name__)
+logger = get_logger()
 
 
 class FormatStr(str):

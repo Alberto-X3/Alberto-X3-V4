@@ -11,7 +11,7 @@ from .translations import language_wrapper
 from .utils import get_logger
 
 
-logger = get_logger(__name__)
+logger = get_logger()
 T = TypeVar("T")
 P = ParamSpec("P")
 

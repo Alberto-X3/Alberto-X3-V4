@@ -55,10 +55,9 @@ from ._utils_essentials import get_logger
 from .errors import NoActiveSessionError
 
 
+logger = get_logger()
 T = TypeVar("T")
 P = ParamSpec("P")
-
-logger = get_logger(__name__)
 
 
 redis: Redis = Redis(

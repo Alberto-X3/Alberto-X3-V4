@@ -33,19 +33,15 @@ def _utils(func: _FUNC) -> _FUNC:
 
 
 @_utils
-def get_logger(name: str, level: Optional[_LOG_LEVEL_STR | int] = None) -> Logger:
+def get_logger(name: Optional[str] = None, level: Optional[_LOG_LEVEL_STR | int] = None) -> Logger:
     """
     Gets a logger.
 
-    Notes
-    -----
-    You should only pass a hardcoded name for ``name`` or use ``__name__``.
-    Noteworthy is that any names containing a "." (dot) will be modified.
-
     Parameters
     ----------
-    name: str
-        The loggers name. (Set a name or use ``__name__``/``__package__`` in any extension or ``__name__``)
+    name: str, optional
+        The loggers name.
+        If set to ``None`` name will be determined by ``__package__`` and ``__name__`` from globals.
     level: _LOG_LEVEL_STR, int, optional
         The loglevel for the logger.
 
@@ -54,13 +50,16 @@ def get_logger(name: str, level: Optional[_LOG_LEVEL_STR | int] = None) -> Logge
     Logger
         The created logger.
     """
-    if "." in name:
-        parts = name.split(".")
-        match len(parts):
-            case 2:  # __package__ from an ext/__name__ from AlbertoX3.*-file
-                name = parts[1]
-            case 3:  # __name__ from an ext
-                name = parts[1]
+    if name is None:
+        import inspect
+
+        frame = getattr(inspect.currentframe(), "f_back", None)
+        if frame is not None:
+            if (pkg := frame.f_globals["__package__"]) == __package__:  # == "AlbertoX3"
+                name = frame.f_globals["__name__"].split(".", maxsplit=1)[-1]
+            else:
+                # remove extension folder
+                name = pkg.split(".", maxsplit=1)[-1]
 
     return auu_get_logger(name=name, level=level, add_handler=False)
 

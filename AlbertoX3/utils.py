@@ -5,6 +5,7 @@ __all__ = (
     "get_bool",
     "get_lib_version",
     "get_extensions",
+    "load_extensions",
     "get_subclasses_in_extensions",
     "get_permissions",
     "get_language",
@@ -16,6 +17,7 @@ __all__ = (
 import re
 import sys
 from datetime import datetime, timezone
+from interactions.client.client import Client
 from interactions.client.const import Absent
 from interactions.models.discord.guild import Guild
 from interactions.models.discord.snowflake import Snowflake_Type
@@ -23,7 +25,7 @@ from interactions.models.discord.user import Member, User
 from interactions.models.internal.context import BaseContext
 from pathlib import Path
 from pprint import pformat
-from typing import Optional, TypeVar
+from typing import Optional, TypeVar, Iterable
 from .constants import Config, LIB_PATH, MISSING, StyleConfig
 from .errors import DeveloperArgumentError
 from .misc import EXTENSION_FEATURES, PrimitiveExtension
@@ -166,9 +168,21 @@ def get_extensions(folder: Absent[Path] = MISSING) -> set[PrimitiveExtension]:
                 continue
 
             features = {f for f in py_files if f in EXTENSION_FEATURES}
-            extensions.add(PrimitiveExtension(group=group.name, name=ext.name, path=ext, has=features))  # type: ignore
+            extensions.add(
+                PrimitiveExtension(
+                    folder=folder.name, group=group.name, name=ext.name, path=ext, has=features  # type: ignore
+                )
+            )
 
     return extensions
+
+
+def load_extensions(bot: Client, extensions: Absent[Iterable[PrimitiveExtension]] = MISSING) -> None:
+    if extensions is MISSING:
+        extensions = get_extensions()
+
+    for extension in extensions:
+        bot.load_extension(name="{0.folder}.{0.group}.{0.name}.ext".format(extension))
 
 
 def get_subclasses_in_extensions(base: C, *, extensions: Absent[list[PrimitiveExtension]] = MISSING) -> list[C]:

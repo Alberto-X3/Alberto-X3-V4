@@ -85,3 +85,4 @@ known-modules = :[vendor,AlbertoX3]
 per-file-ignores =
     tests/test_*.py:ANN201
     AlbertoX3/__main__.py:DAL000
+    extensions/**/ext.py:ANN201

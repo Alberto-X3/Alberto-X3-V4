@@ -52,6 +52,8 @@ class ExtensionFeaturesGenerator(ABC):
 
 
 class PrimitiveExtension(ExtensionFeaturesGenerator):
+    folder: str
+    """The folder in which the groups are"""
     group: str
     """The group in which the extension is present"""
     name: str
@@ -61,7 +63,8 @@ class PrimitiveExtension(ExtensionFeaturesGenerator):
     features: int
     """The features encoded in an integer (check attribute ``has_FEATURE_NAME`` (lower case))"""
 
-    def __init__(self, group: str, name: str, path: Path, *, has: Iterable[_EXTENSION_FEATURES] = MISSING):
+    def __init__(self, folder: str, group: str, name: str, path: Path, *, has: Iterable[_EXTENSION_FEATURES] = MISSING):
+        self.folder = folder
         self.group = group
         self.name = name
         self.path = path

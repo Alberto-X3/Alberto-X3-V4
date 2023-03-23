@@ -76,8 +76,16 @@ class PrimitiveExtension(ExtensionFeaturesGenerator):
                     continue
                 self.features += 1 << i
 
+    @property
+    def full_name(self) -> str:
+        return "{0.group}.{0.name}".format(self)
+
+    @property
+    def package(self) -> str:
+        return "{0.folder}.{0.full_name}".format(self)
+
     def _has(self, i: int) -> bool:
         return (self.features & (1 << i)) == (1 << i)
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} {self.name!r} ({self.features})>"
+        return f"<{self.__class__.__name__} {self.full_name!r} ({self.features})>"

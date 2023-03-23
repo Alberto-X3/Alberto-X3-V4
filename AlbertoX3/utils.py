@@ -27,12 +27,13 @@ from pathlib import Path
 from pprint import pformat
 from typing import Optional, TypeVar, Iterable
 from .constants import Config, LIB_PATH, MISSING, StyleConfig
-from .errors import DeveloperArgumentError
+from .errors import DeveloperArgumentError, NoExtensionError, TooMayExtensionsError
 from .misc import EXTENSION_FEATURES, PrimitiveExtension
 from .permission import BasePermission
 from ._utils_essentials import get_bool, get_logger
 
 
+logger = get_logger()
 T = TypeVar("T")
 C = TypeVar("C", bound=type[object])
 
@@ -181,11 +182,89 @@ def load_extensions(bot: Client, extensions: Absent[Iterable[PrimitiveExtension]
     if extensions is MISSING:
         extensions = get_extensions()
 
+    # get enabled extensions
+    enabled = check_extension_requirements(extensions)
+
+    for extension in enabled:
+        logger.info(f"Loading extension {extension.full_name!r}")
+        bot.load_extension(name=f"{extension.package}.ext")
+
+    skipped = {ext for ext in extensions if ext not in enabled}
+    if skipped:
+        logger.info(f"Skipped loading following extensions: {', '.join([ext.full_name for ext in skipped])}")
+
+
+def check_extension_requirements(extensions: Absent[Iterable[PrimitiveExtension]] = MISSING) -> set[PrimitiveExtension]:
+    """
+    Checks all requirements listed in ``Extension.requirements``
+
+    Parameters
+    ----------
+    extensions: Absent[Iterable[PrimitiveExtension]]
+        All extensions to check among each other.
+
+    Returns
+    -------
+    set[PrimitiveExtension]
+        All extensions with met requirements (and are enabled).
+    """
+    # ToDo: respect ``Extension.requires["lib"]``
+    # WARNING: don't read this code! It's a mess, and it works (somehow).
+    #          Touching this function might end up destroying the whole startup of the bot!
+    #          You've been warned!
+    #          ~AlbertUnruh
+    from .ipy_wrapper import Extension
+
+    if extensions is MISSING:
+        extensions = get_extensions()
+
+    ext_classes: set[tuple[PrimitiveExtension, type[Extension]]] = set()
+    disabled: set[PrimitiveExtension] = set()
+    required_by: dict[str, list[tuple[PrimitiveExtension, type[Extension]]]] = {}
+
+    # get all (by default) disabled extensions (and fill in ext_classes)
     for extension in extensions:
-        bot.load_extension(name="{0.folder}.{0.group}.{0.name}.ext".format(extension))
+        try:
+            __import__(f"{extension.package}.ext")
+        except BaseException:  # noqa: F841  # something is wrong with the extension... missing imports? syntax errors?
+            logger.warning(f"Something unexpected happened during loading {extension.package!r}")
+            disabled.add(extension)
+        else:
+            ext_cls = get_subclasses_in_extensions(base=Extension, extensions=[extension])
+            match len(ext_cls):
+                case 0:  # no Extension
+                    raise NoExtensionError(extension)
+                case 1:  # perfect!
+                    ext_classes.add((extension, cls := ext_cls[0]))
+                    if not cls.enabled:
+                        disabled.add(extension)
+                case _:  # more than one!
+                    raise TooMayExtensionsError(extension)
+
+    # get all dependencies
+    for ext in ext_classes:
+        for dep in ext[1].requires["ext"]:
+            required_by.setdefault(dep, []).append(ext)
+
+    ext_names = [ext[0].full_name for ext in ext_classes]
+    dis_names = [ext.full_name for ext in disabled]
+    unsatisfied: list[str] = [dep for dep in required_by if dep not in ext_names or dep in dis_names]
+
+    while unsatisfied:
+        dependency = unsatisfied.pop()
+        if dependency not in required_by:
+            continue
+        for ext, _ in required_by[dependency]:
+            if ext.full_name in dis_names:
+                continue
+            disabled.add(ext)
+            dis_names.append(ext.full_name)
+            unsatisfied.append(ext.full_name)
+
+    return {ext[0] for ext in ext_classes} - disabled
 
 
-def get_subclasses_in_extensions(base: C, *, extensions: Absent[list[PrimitiveExtension]] = MISSING) -> list[C]:
+def get_subclasses_in_extensions(base: C, *, extensions: Absent[Iterable[PrimitiveExtension]] = MISSING) -> list[C]:
     if extensions is MISSING:
         extensions = Config.EXTENSIONS
 

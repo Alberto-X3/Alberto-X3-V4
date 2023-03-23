@@ -10,7 +10,6 @@ from AlbertoX3.utils import load_extensions, get_extensions
 bot = Client(
     token=TOKEN,
     intents=Intents.ALL,  # Intent.ALL is very bad practice!!!
-    delete_unused_application_cmds=True,
 )
 pc_setup(client=bot, default_prefix="t!")
 load_extensions(bot=bot, extensions=get_extensions(folder=Path("./extensions/")))

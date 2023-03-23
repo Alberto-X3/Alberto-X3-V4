@@ -5,16 +5,24 @@ from interactions.ext.prefixed_commands.context import PrefixedContext
 from interactions.ext.prefixed_commands.manager import PrefixedInjectedClient
 
 from AlbertoX3.ipy_wrapper import Extension
-from AlbertoX3.utils import get_logger
+from AlbertoX3.utils import get_logger, get_extensions
 
 
 logger = get_logger()
 
 
 class Sudo(Extension):
+    enabled = True
+    requires = {"lib": [], "ext": []}
+
     @prefixed_command(name="sudo", aliases=["!!"])
     async def sudo(self, ctx: PrefixedContext):
+        from pathlib import Path
+
         await ctx.reply("Hello There, I've got no functionality...")
+        await ctx.reply(
+            "```\n" + "\n".join([ext.full_name for ext in get_extensions(folder=Path("./extensions/"))]) + "\n```"
+        )
         # ToDo: sudo (either a rerun of failed command or input command to execute directly)
 
 

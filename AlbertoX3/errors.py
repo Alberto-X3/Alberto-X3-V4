@@ -11,10 +11,18 @@ __all__ = (
     "UnsupportedLanguageError",
     "DatabaseError",
     "NoActiveSessionError",
+    "ExtensionError",
+    "ExtensionLoadingError",
+    "NoExtensionError",
+    "TooMayExtensionsError",
 )
 
 
 from interactions.client.const import Absent, MISSING
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .misc import PrimitiveExtension
 
 
 class AlbertoX3Error(Exception):
@@ -121,3 +129,24 @@ class DatabaseError(AlbertoX3Error):
 class NoActiveSessionError(DatabaseError):
     def __str__(self) -> str:
         return "There is no active database session in this context!"
+
+
+class ExtensionError(AlbertoX3Error):
+    pass
+
+
+class ExtensionLoadingError(ExtensionError):
+    extension: "PrimitiveExtension"
+
+    def __init__(self, extension: "PrimitiveExtension"):
+        self.extension = extension
+
+
+class NoExtensionError(ExtensionLoadingError):
+    def __str__(self) -> str:
+        return f"No extension class could be found in {self.extension.package}!"
+
+
+class TooMayExtensionsError(ExtensionLoadingError):
+    def __str__(self) -> str:
+        return f"Too many extensions classes found in {self.extension.package}!"

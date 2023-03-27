@@ -184,7 +184,7 @@ def get_installed_libraries() -> dict[str, str]:
             p, v = pkg.split()
             if p == "Package" and v == "Version":
                 continue
-            if max(map(lambda s: len(s.replace("-", "")), [p, v])) == 0:
+            if max(len(s.replace("-", "")) for s in [p, v]) == 0:
                 continue
             libraries[p] = v
 
@@ -284,7 +284,7 @@ def check_extension_requirements(extensions: Absent[Iterable[PrimitiveExtension]
                         disabled.add(extension)
                     else:
                         for req in cls.requires["lib"]:
-                            lib, mode, ver = cast(re.Match[str], _LIB_REGEX.match(req)).groups()
+                            lib, mode, ver = cast(re.Match[str], _LIB_REGEX.match(req)).groups()  # type: ignore
                             if (l_ver := libraries.get(lib, MISSING)) is MISSING:
                                 disabled.add(extension)
                             if ver is not None:  # specific version is set

@@ -18,11 +18,14 @@ class Sudo(Extension):
     @prefixed_command(name="sudo", aliases=["!!"])
     async def sudo(self, ctx: PrefixedContext):
         from pathlib import Path
+        from AlbertoX3.aio import run_in_thread
+        from AlbertoX3.utils import get_installed_libraries
 
         await ctx.reply("Hello There, I've got no functionality...")
         await ctx.reply(
             "```\n" + "\n".join([ext.full_name for ext in get_extensions(folder=Path("./extensions/"))]) + "\n```"
         )
+        await ctx.reply(f"``{await run_in_thread(get_installed_libraries)}``")
         # ToDo: sudo (either a rerun of failed command or input command to execute directly)
 
 

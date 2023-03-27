@@ -4,6 +4,7 @@ __all__ = (
     "get_value_table",
     "get_bool",
     "get_lib_version",
+    "get_installed_libraries",
     "get_extensions",
     "load_extensions",
     "get_subclasses_in_extensions",
@@ -25,7 +26,7 @@ from interactions.models.discord.user import Member, User
 from interactions.models.internal.context import BaseContext
 from pathlib import Path
 from pprint import pformat
-from typing import Optional, TypeVar, Iterable
+from typing import Optional, TypeVar, Iterable, cast, Literal
 from .constants import Config, LIB_PATH, MISSING, StyleConfig
 from .errors import DeveloperArgumentError, NoExtensionError, TooMayExtensionsError
 from .misc import EXTENSION_FEATURES, PrimitiveExtension
@@ -155,6 +156,41 @@ def get_lib_version() -> str:
     return version
 
 
+def get_installed_libraries() -> dict[str, str]:
+    """
+    Gets every installed library via ``pip list``
+
+    Returns
+    -------
+    dict[str, str]
+        A dictionary with {package: version}.
+    """
+    import subprocess  # noqa: S404
+
+    out: bytes
+    err: bytes
+    p: str
+    v: str
+    libraries: dict[str, str] = {}
+
+    out, err = subprocess.Popen(  # noqa S603, S607
+        ["pip", "list"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    ).communicate()
+
+    if out:
+        for pkg in out.decode().splitlines(keepends=False):
+            p, v = pkg.split()
+            if p == "Package" and v == "Version":
+                continue
+            if max(len(s.replace("-", "")) for s in [p, v]) == 0:
+                continue
+            libraries[p] = v
+
+    return libraries
+
+
 def get_extensions(folder: Absent[Path] = MISSING) -> set[PrimitiveExtension]:
     if folder is MISSING:
         folder = Config.EXTENSIONS_FOLDER
@@ -194,6 +230,9 @@ def load_extensions(bot: Client, extensions: Absent[Iterable[PrimitiveExtension]
         logger.info(f"Skipped loading following extensions: {', '.join([ext.full_name for ext in skipped])}")
 
 
+_LIB_REGEX: re.Pattern[str] = re.compile(r"^([a-zA-Z][\w-]*)(?:([=!><~])=(\d[\d.]*))?$")
+
+
 def check_extension_requirements(extensions: Absent[Iterable[PrimitiveExtension]] = MISSING) -> set[PrimitiveExtension]:
     """
     Checks all requirements listed in ``Extension.requirements``
@@ -208,7 +247,6 @@ def check_extension_requirements(extensions: Absent[Iterable[PrimitiveExtension]
     set[PrimitiveExtension]
         All extensions with met requirements (and are enabled).
     """
-    # ToDo: respect ``Extension.requires["lib"]``
     # WARNING: don't read this code! It's a mess, and it works (somehow).
     #          Touching this function might end up destroying the whole startup of the bot!
     #          You've been warned!
@@ -221,6 +259,11 @@ def check_extension_requirements(extensions: Absent[Iterable[PrimitiveExtension]
     ext_classes: set[tuple[PrimitiveExtension, type[Extension]]] = set()
     disabled: set[PrimitiveExtension] = set()
     required_by: dict[str, list[tuple[PrimitiveExtension, type[Extension]]]] = {}
+    libraries: dict[str, str] = get_installed_libraries()
+    lib: str
+    mode: Literal["=", "!", ">", "<", "~"] | None
+    ver: str | None
+    l_ver: str
 
     # get all (by default) disabled extensions (and fill in ext_classes)
     for extension in extensions:
@@ -238,6 +281,13 @@ def check_extension_requirements(extensions: Absent[Iterable[PrimitiveExtension]
                     ext_classes.add((extension, cls := ext_cls[0]))
                     if not cls.enabled:
                         disabled.add(extension)
+                    else:
+                        for req in cls.requires["lib"]:
+                            lib, mode, ver = cast(re.Match[str], _LIB_REGEX.match(req)).groups()  # type: ignore
+                            if (l_ver := libraries.get(lib, MISSING)) is MISSING:
+                                disabled.add(extension)
+                            if ver is not None and match_version(ver, f"{mode}=", l_ver):  # type: ignore
+                                disabled.add(extension)
                 case _:  # more than one!
                     raise TooMayExtensionsError(extension)
 
@@ -262,6 +312,48 @@ def check_extension_requirements(extensions: Absent[Iterable[PrimitiveExtension]
             unsatisfied.append(ext.full_name)
 
     return {ext[0] for ext in ext_classes} - disabled
+
+
+def match_version(v1: str, mode: Literal["==", "!=", ">=", "<=", "~="], v2: str) -> bool:
+    """
+    Matches ``v1`` against ``v2`` using ``mode``.
+
+    Parameters
+    ----------
+    v1 str:
+        Version A
+    mode Literal["==", "!=", ">=", "<=", "~="]:
+        The mode to check
+    v2 str:
+        Version B
+
+    Returns
+    -------
+    bool
+    """
+    v1t: tuple[int, ...] = tuple(map(int, v1.split(".")))
+    v2t: tuple[int, ...] = tuple(map(int, v2.split(".")))
+
+    def unify_length(a: tuple[int, ...], b: tuple[int, ...]) -> tuple[tuple[int, ...], tuple[int, ...]]:
+        m = max(len(o) for o in [a, b])
+        a += (0,) * (m - len(a))
+        b += (0,) * (m - len(b))
+        return a, b
+
+    v1t, v2t = unify_length(v1t, v2t)
+
+    match mode:
+        case "==":
+            return v1t == v2t
+        case "!=":
+            return v1t != v2t
+        case ">=":
+            return v1t >= v2t
+        case "<=":
+            return v1t <= v2t
+        case "~=":
+            v1t, v2t = v1t + (0, 0), v2t + (0, 0)  # to ensure a length of at least 2
+            return v1t[0] == v2t[0] and v1t[1:] >= v2t[1:]
 
 
 def get_subclasses_in_extensions(base: C, *, extensions: Absent[Iterable[PrimitiveExtension]] = MISSING) -> list[C]:

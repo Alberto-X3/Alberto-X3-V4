@@ -247,7 +247,6 @@ def check_extension_requirements(extensions: Absent[Iterable[PrimitiveExtension]
     set[PrimitiveExtension]
         All extensions with met requirements (and are enabled).
     """
-    # ToDo: respect ``Extension.requires["lib"]`` version
     # WARNING: don't read this code! It's a mess, and it works (somehow).
     #          Touching this function might end up destroying the whole startup of the bot!
     #          You've been warned!
@@ -287,11 +286,8 @@ def check_extension_requirements(extensions: Absent[Iterable[PrimitiveExtension]
                             lib, mode, ver = cast(re.Match[str], _LIB_REGEX.match(req)).groups()  # type: ignore
                             if (l_ver := libraries.get(lib, MISSING)) is MISSING:
                                 disabled.add(extension)
-                            if ver is not None:  # specific version is set
-                                logger.warning(
-                                    f"Version specification isn't supported at the moment! "
-                                    f"`{lib} {mode}= {ver}` specified, `{l_ver}`is given; no checks ran"
-                                )
+                            if ver is not None and match_version(ver, f"{mode}=", l_ver):  # type: ignore
+                                disabled.add(extension)
                 case _:  # more than one!
                     raise TooMayExtensionsError(extension)
 
@@ -316,6 +312,48 @@ def check_extension_requirements(extensions: Absent[Iterable[PrimitiveExtension]
             unsatisfied.append(ext.full_name)
 
     return {ext[0] for ext in ext_classes} - disabled
+
+
+def match_version(v1: str, mode: Literal["==", "!=", ">=", "<=", "~="], v2: str) -> bool:
+    """
+    Matches ``v1`` against ``v2`` using ``mode``.
+
+    Parameters
+    ----------
+    v1 str:
+        Version A
+    mode Literal["==", "!=", ">=", "<=", "~="]:
+        The mode to check
+    v2 str:
+        Version B
+
+    Returns
+    -------
+    bool
+    """
+    v1t: tuple[int, ...] = tuple(map(int, v1.split(".")))
+    v2t: tuple[int, ...] = tuple(map(int, v2.split(".")))
+
+    def unify_length(a: tuple[int, ...], b: tuple[int, ...]) -> tuple[tuple[int, ...], tuple[int, ...]]:
+        m = max(len(o) for o in [a, b])
+        a += (0,) * (m - len(a))
+        b += (0,) * (m - len(b))
+        return a, b
+
+    v1t, v2t = unify_length(v1t, v2t)
+
+    match mode:
+        case "==":
+            return v1t == v2t
+        case "!=":
+            return v1t != v2t
+        case ">=":
+            return v1t >= v2t
+        case "<=":
+            return v1t <= v2t
+        case "~=":
+            v1t, v2t = v1t + (0, 0), v2t + (0, 0)  # to ensure a length of at least 2
+            return v1t[0] == v2t[0] and v1t[1:] >= v2t[1:]
 
 
 def get_subclasses_in_extensions(base: C, *, extensions: Absent[Iterable[PrimitiveExtension]] = MISSING) -> list[C]:

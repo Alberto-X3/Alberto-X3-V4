@@ -11,7 +11,7 @@ from abc import ABC, abstractmethod
 from interactions.client.const import MISSING
 from pathlib import Path
 from typing import Callable, Iterable, Literal
-from ._utils_essentials import get_logger
+from .utils.essentials import get_logger
 
 
 logger = get_logger()

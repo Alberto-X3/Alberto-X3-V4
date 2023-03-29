@@ -4,7 +4,7 @@ from interactions.ext.prefixed_commands.manager import setup as pc_setup
 from interactions.models.discord.enums import Intents
 from AlbertoX3 import __root_logger__
 from AlbertoX3.environment import TOKEN
-from AlbertoX3.utils import load_extensions, get_extensions
+from AlbertoX3.utils.extensions import load_extensions, get_extensions
 
 
 bot = Client(

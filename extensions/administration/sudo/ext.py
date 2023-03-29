@@ -5,7 +5,8 @@ from interactions.ext.prefixed_commands.context import PrefixedContext
 from interactions.ext.prefixed_commands.manager import PrefixedInjectedClient
 
 from AlbertoX3.ipy_wrapper import Extension
-from AlbertoX3.utils import get_logger, get_extensions
+from AlbertoX3.utils.essentials import get_logger
+from AlbertoX3.utils.extensions import get_extensions
 
 
 logger = get_logger()
@@ -19,7 +20,7 @@ class Sudo(Extension):
     async def sudo(self, ctx: PrefixedContext):
         from pathlib import Path
         from AlbertoX3.aio import run_in_thread
-        from AlbertoX3.utils import get_installed_libraries
+        from AlbertoX3.utils.terminal import get_installed_libraries
 
         await ctx.reply("Hello There, I've got no functionality...")
         await ctx.reply(

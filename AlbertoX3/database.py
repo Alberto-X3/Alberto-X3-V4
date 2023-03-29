@@ -51,8 +51,8 @@ from .environment import (
     REDIS_PORT,
     REDIS_PASSWORD,
 )
-from ._utils_essentials import get_logger
 from .errors import NoActiveSessionError
+from .utils.essentials import get_logger
 
 
 logger = get_logger()

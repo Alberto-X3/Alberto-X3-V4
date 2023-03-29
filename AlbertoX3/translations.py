@@ -18,7 +18,8 @@ from yaml import safe_load
 from .constants import Config
 from .errors import UnsupportedLanguageError, UnsupportedTranslationTypeError
 from .misc import FormatStr, PrimitiveExtension
-from .utils import get_language, get_logger
+from .utils.essentials import get_logger
+from .utils.general import get_language
 
 
 logger = get_logger()

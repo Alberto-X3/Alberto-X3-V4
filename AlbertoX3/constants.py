@@ -77,7 +77,9 @@ class Config:
 
     def __new__(cls, path: Path):
         # due to circular imports
-        from .utils import get_bool, get_lib_version, get_extensions
+        from .utils.essentials import get_bool
+        from .utils.extensions import get_extensions
+        from .utils.terminal import get_lib_version
 
         config: dict[str, Any] = safe_load(path.read_text("utf-8"))
 

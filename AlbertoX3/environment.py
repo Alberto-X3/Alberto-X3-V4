@@ -23,7 +23,7 @@ __all__ = (
 from dotenv.main import load_dotenv
 from os import environ, getenv
 from typing import cast
-from ._utils_essentials import get_bool
+from .utils.essentials import get_bool
 
 
 load_dotenv()

@@ -9,7 +9,7 @@ from abc import ABC
 from typing import Any, Callable, Generic, ItemsView, Iterator, TypeVar
 from yaml import safe_load
 from .constants import LIB_PATH
-from .utils import get_logger
+from .utils.essentials import get_logger
 
 
 logger = get_logger()

@@ -20,7 +20,7 @@ class Sudo(Extension):
     async def sudo(self, ctx: PrefixedContext):
         from pathlib import Path
         from AlbertoX3.aio import run_in_thread
-        from AlbertoX3.utils import get_installed_libraries
+        from AlbertoX3.utils.terminal import get_installed_libraries
 
         await ctx.reply("Hello There, I've got no functionality...")
         await ctx.reply(

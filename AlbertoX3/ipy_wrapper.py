@@ -1,6 +1,7 @@
 __all__ = ("Extension",)
 
 
+from interactions.ext.prefixed_commands.manager import PrefixedInjectedClient
 from interactions.models.internal.command import BaseCommand as ipy_BaseCommand
 from interactions.models.internal.extension import Extension as ipy_Extension
 from interactions.models.internal.listener import Listener as ipy_Listener
@@ -31,6 +32,7 @@ class _Requirements(TypedDict):
 
 
 class Extension(ipy_Extension):
+    bot: PrefixedInjectedClient
     enabled: bool
     """Whether this extension is enabled or not. If enabled it may be disabled if requirements aren't met."""
     requires: _Requirements

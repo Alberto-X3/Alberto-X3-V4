@@ -10,6 +10,7 @@ __all__ = (
 
 from functools import partial
 from interactions.client.const import Absent, Missing
+from interactions.models.discord.enums import Permissions
 from interactions.models.discord.user import Member, User
 from pathlib import Path
 from typing import Awaitable, Callable, TYPE_CHECKING, Any, cast
@@ -158,7 +159,7 @@ class Config:
         permission_levels_raw: dict,
         permission_level_team_raw: str,
         permission_level_default_raw: str,
-        permission_default_overrides_raw: dict[str, dict[str, str]],
+        permission_default_overrides_raw: dict[str, dict[str, dict[str, str]]],
     ) -> None:
         from .permission import BasePermissionLevel, PermissionLevel
         from .settings import RoleSettings
@@ -198,7 +199,7 @@ class Config:
         for ext, overrides in permission_default_overrides_raw.items():
             for permission, level in overrides.items():
                 cls.PERMISSION_DEFAULT_OVERRIDES.setdefault(ext.lower(), {}).setdefault(
-                    permission.lower(), getattr(cls.PERMISSION_LEVELS, level.upper())
+                    permission.lower(), getattr(cls.PERMISSION_LEVELS, level.upper())  # type: ignore
                 )
 
 
@@ -217,7 +218,7 @@ async def _get_permission_level(
         return await get_role_setting(role_name) in roles
 
     for k, v in permission_levels.items():
-        if any(getattr(member.guild_permissions, p.upper()) for p in v.guild_permissions):
+        if any(getattr(Permissions, p.upper()) in member.guild_permissions for p in v.guild_permissions):
             return getattr(cls, k.upper())
 
         for r in v.roles:

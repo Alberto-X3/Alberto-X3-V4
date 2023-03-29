@@ -1,0 +1,4 @@
+permissions:
+  ban: Ban members
+  unban: Unban members
+  tempban: Temporarily ban members

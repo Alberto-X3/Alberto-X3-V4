@@ -1,32 +1,94 @@
 __all__ = ("Sudo",)
 
-from interactions.ext.prefixed_commands.command import prefixed_command
+
+import inspect
+import types
+
+from interactions.api.events.base import RawGatewayEvent
+from interactions.api.events.internal import CommandCompletion
+from interactions.ext.prefixed_commands.command import PrefixedCommand, prefixed_command
 from interactions.ext.prefixed_commands.context import PrefixedContext
 from interactions.ext.prefixed_commands.manager import PrefixedInjectedClient
+from interactions.models.discord.channel import BaseChannel
+from interactions.models.internal.application_commands import SlashCommand
+from interactions.models.internal.command import check
+from interactions.models.internal.context import BaseContext
+from interactions.models.internal.listener import listen
 
+from AlbertoX3.constants import Config
+from AlbertoX3.environment import OWNER_ID
 from AlbertoX3.ipy_wrapper import Extension
-from AlbertoX3.utils import get_logger, get_extensions
+from AlbertoX3.permission import permission_override
+from AlbertoX3.utils import get_logger
 
 
 logger = get_logger()
+
+
+@check
+async def is_super_user(ctx: BaseContext) -> bool:
+    if ctx.author.id != OWNER_ID:
+        return False
+    return True
 
 
 class Sudo(Extension):
     enabled = True
     requires = {"lib": [], "ext": []}
 
-    @prefixed_command(name="sudo", aliases=["!!"])
-    async def sudo(self, ctx: PrefixedContext):
-        from pathlib import Path
-        from AlbertoX3.aio import run_in_thread
-        from AlbertoX3.utils import get_installed_libraries
+    cmd_cache: dict[BaseChannel, tuple[PrefixedCommand | SlashCommand, list, dict]]
 
-        await ctx.reply("Hello There, I've got no functionality...")
-        await ctx.reply(
-            "```\n" + "\n".join([ext.full_name for ext in get_extensions(folder=Path("./extensions/"))]) + "\n```"
-        )
-        await ctx.reply(f"``{await run_in_thread(get_installed_libraries)}``")
-        # ToDo: sudo (either a rerun of failed command or input command to execute directly)
+    def __init__(self, *_: ..., **__: ...):
+        self.cmd_cache = {}
+
+    @listen()
+    async def on_owner_cmd(self, event: CommandCompletion):
+        if (ctx := event.ctx).author.id == OWNER_ID:
+            if isinstance(cmd := ctx.command, (PrefixedCommand, SlashCommand)):
+                if cmd.name != self.sudo.name:  # type: ignore
+                    self.cmd_cache[ctx.channel] = (cmd, ctx.args, ctx.kwargs)  # type: ignore
+
+    @prefixed_command(name="sudo", aliases=["!!"])
+    @is_super_user
+    async def sudo(self, ctx: PrefixedContext, *, command: str = ""):
+        permission_override.set(Config.PERMISSION_LEVELS.max())
+
+        if command:  # could also just use ctx.content_parameters
+            # get event data from initial event to simulate a new incoming event
+            event: RawGatewayEvent
+            frame: types.FrameType = inspect.currentframe()  # type: ignore
+            while not isinstance((event := frame.f_locals.get("event", None)), RawGatewayEvent):
+                frame = frame.f_back  # type: ignore
+
+            orig_content = event.data["content"]
+            base_data = {"channel_id": event.data["channel_id"], "id": event.data["id"]}
+
+            # manipulate message content in cache
+            self.bot.cache.place_message_data(base_data | {"content": ctx.prefix + ctx.content_parameters})
+            try:
+                # process new command
+                await self.bot.prefixed._dispatch_prefixed_commands(event)  # noqa
+            finally:
+                # correct message content in cache (if it wasn't deleted in the meantime)
+                if self.bot.cache.get_message(base_data["channel_id"], base_data["id"]) is not None:
+                    self.bot.cache.place_message_data(base_data | {"content": orig_content})
+
+        else:
+            ctx.command, ctx.args, ctx.kwargs = self.cmd_cache.get(ctx.channel, (None, (), {}))
+            if (cmd := ctx.command) is None:
+                # no commands have been run in the current channel
+                return
+
+            if isinstance(cmd, PrefixedCommand):
+                # let's reverse the data processing and recreate the war event \o/
+                pass
+                # event: RawGatewayEvent
+                # await self.bot.prefixed._dispatch_prefixed_commands(event)  # noqa
+
+            if isinstance(cmd, SlashCommand):
+                # let's create a new context with faked endpoints \o/
+                pass
+                # await self.bot._run_slash_command(command=ctx.command, ctx=ctx)  # noqa
 
 
 def setup(bot: PrefixedInjectedClient) -> None:

@@ -86,3 +86,4 @@ per-file-ignores =
     tests/test_*.py:ANN201
     AlbertoX3/__main__.py:DAL000
     extensions/**/ext.py:ANN201
+    extensions/**/db.py:A003

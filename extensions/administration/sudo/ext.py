@@ -1,9 +1,6 @@
 __all__ = ("Sudo",)
 
 
-import inspect
-import types
-
 from interactions.api.events.base import RawGatewayEvent
 from interactions.api.events.internal import CommandCompletion
 from interactions.ext.prefixed_commands.command import PrefixedCommand, prefixed_command
@@ -54,13 +51,15 @@ class Sudo(Extension):
         permission_override.set(Config.PERMISSION_LEVELS.max())
 
         if command:  # could also just use ctx.content_parameters
-            # get event data from initial event to simulate a new incoming event
-            event: RawGatewayEvent
-            frame: types.FrameType = inspect.currentframe()  # type: ignore
-            while not isinstance((event := frame.f_locals.get("event", None)), RawGatewayEvent):
-                frame = frame.f_back  # type: ignore
+            event = RawGatewayEvent()
+            event.data["content"] = "dummy content, isn't used at all..."
+            event.data["guild_id"] = ctx.guild_id
+            event.data["channel_id"] = ctx.channel_id
+            event.data["id"] = ctx.message_id
+            event.data["webhook"] = False
+            event.data["author"] = {"bot": False}
 
-            orig_content = event.data["content"]
+            orig_content = ctx.message.content
             base_data = {"channel_id": event.data["channel_id"], "id": event.data["id"]}
 
             # manipulate message content in cache

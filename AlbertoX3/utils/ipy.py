@@ -1,4 +1,5 @@
 __all__ = (
+    "get_embed",
     "get_member",
     "get_user",
 )
@@ -6,9 +7,46 @@ __all__ = (
 
 import re
 from interactions.models.discord.snowflake import Snowflake_Type
+from interactions.models.discord.embed import Embed, EmbedField, EmbedAuthor, EmbedAttachment, EmbedFooter
+from interactions.models.discord.timestamp import Timestamp
 from interactions.models.discord.user import Member, User
 from interactions.models.internal.context import BaseContext
-from typing import Optional
+from typing import Optional, cast
+from ..colors import AllColors
+
+
+def get_embed(
+    *,
+    title: Optional[str] = None,
+    description: Optional[str] = None,
+    color: Optional[int] = AllColors.default,
+    url: Optional[str] = None,
+    timestamp: Optional[Timestamp | bool] = True,
+    fields: Optional[list[EmbedField]] = None,
+    author: Optional[EmbedAuthor] = None,
+    thumbnail: Optional[EmbedAttachment] = None,
+    images: Optional[list[EmbedAttachment]] = None,
+    footer: Optional[EmbedFooter] = None,
+) -> Embed:
+    """Basically the same as ``interactions.Embed()``, but with default values."""
+    if timestamp is False:
+        timestamp = None
+    elif timestamp is True:
+        timestamp = Timestamp.utcnow()
+    cast(Optional[Timestamp], timestamp)
+
+    return Embed(
+        title=title,
+        description=description,
+        color=color,
+        url=url,
+        timestamp=timestamp,
+        fields=fields,
+        author=author,
+        thumbnail=thumbnail,
+        images=images,
+        footer=footer,
+    )
 
 
 _ID_REGEX: re.Pattern[str] = re.compile(r"^([1-9]\d{6,19})$")

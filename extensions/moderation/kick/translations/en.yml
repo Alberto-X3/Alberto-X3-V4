@@ -1,5 +1,6 @@
 permissions:
   kick: Kick users
+  hardkick: Hardkick users
 
 kick:
   success:
@@ -10,11 +11,11 @@ kick:
     missing_permissions: "Unable to kick {user}!"
     hierarchie: "Respect the hierarchie! *You aren't higher then {user}!*"
 
-unban:
+hardkick:
   success:
-    title: "Successfully unbanned user!"
-    info: "Unbanned {user} with reason `{reason}`"
+    title: "Successfully hardkicked user!"
+    info: "Hardkicked {user} with reason `{reason}`"
   failure:
-    title: "Failed to unban user!"
-    not_banned: "User {user} isn't banned on this server!"
-    missing_permissions: "Unable to unban {user}!"
+    title: "Failed to hardkick user!"
+    missing_permissions: "Unable to hardkick {user}!"
+    hierarchie: "Respect the hierarchie! *You aren't higher then {user}!*"

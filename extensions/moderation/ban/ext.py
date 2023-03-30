@@ -22,7 +22,7 @@ from AlbertoX3.utils.ipy import get_embed
 from .colors import Colors
 from .db import BanModel, UnbanModel
 from .permission import BanPermission
-
+from .settings import BanSettings
 
 logger = get_logger()
 tg: TranslationNamespace = cast(TranslationNamespace, t.g)
@@ -31,6 +31,7 @@ t: TranslationNamespace = cast(TranslationNamespace, t.ban)
 
 class Ban(Extension):
     enabled = True
+    requires = {"lib": [], "ext": []}
 
     # ToDo: add task to automatically unban banned members
 
@@ -57,7 +58,11 @@ class Ban(Extension):
             #   A: victim is not on the server
             #   B: author is higher than victim (higher role)
             try:
-                await ctx.guild.ban(user=user, reason=reason)
+                await ctx.guild.ban(
+                    user=user,
+                    reason=reason,
+                    delete_message_seconds=await BanSettings.delete_message_seconds.get(),
+                )
             except Forbidden:
                 title = t.ban.failure.title
                 description = t.ban.failure.missing_permissions(user=user.mention)

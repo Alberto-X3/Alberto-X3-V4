@@ -12,3 +12,4 @@ class KickPermission(BasePermission):
         return t.kick.permissions[self.name]
 
     kick = auto()
+    hardkick = auto()

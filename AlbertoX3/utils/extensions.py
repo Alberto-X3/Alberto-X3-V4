@@ -104,7 +104,7 @@ def check_extension_requirements(extensions: Absent[Iterable[PrimitiveExtension]
         try:
             __import__(f"{extension.package}.ext")
         except BaseException:  # noqa: F841  # something is wrong with the extension... missing imports? syntax errors?
-            logger.warning(f"Something unexpected happened during loading {extension.package!r}")
+            logger.warning(f"Something unexpected happened during loading {extension.package!r}", exc_info=True)
             disabled.add(extension)
         else:
             ext_cls = get_subclasses_in_extensions(base=Extension, extensions=[extension])

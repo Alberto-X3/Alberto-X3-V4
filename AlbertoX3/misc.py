@@ -10,7 +10,7 @@ __all__ = (
 from abc import ABC, abstractmethod
 from interactions.client.const import MISSING
 from pathlib import Path
-from typing import Callable, Iterable, Literal
+from typing import Callable, Iterable, Literal, Any
 from .utils.essentials import get_logger
 
 
@@ -19,6 +19,7 @@ logger = get_logger()
 
 class FormatStr(str):
     __call__: Callable[..., str] = str.format
+    __getattribute__: Callable[[str, str], Any] = str.__getattribute__  # to confuse pyright ^^
 
 
 _EXTENSION_FEATURES = Literal["ext", "colors", "db", "permissions", "settings", "stats"]

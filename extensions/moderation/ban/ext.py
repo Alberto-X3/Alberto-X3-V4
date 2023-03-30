@@ -78,7 +78,7 @@ class Ban(Extension):
 
         await ctx.reply(
             embed=get_embed(
-                title=title,
+                title=title,  # type: ignore
                 description=description,
                 color=color,
             )
@@ -112,7 +112,7 @@ class Ban(Extension):
 
         await ctx.reply(
             embed=get_embed(
-                title=title,
+                title=title,  # type: ignore
                 description=description,
                 color=color,
             )

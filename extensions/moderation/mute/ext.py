@@ -11,9 +11,8 @@ logger = get_logger()
 
 
 class Mute(Extension):
-    # ToDo: mute
+    # ToDo: mute (unlimited / limited time)
     # ToDo: unmute
-    # ToDo: tempmute (limited time)
     pass
 
 

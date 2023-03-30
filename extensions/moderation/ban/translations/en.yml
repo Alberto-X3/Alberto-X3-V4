@@ -1,4 +1,23 @@
 permissions:
-  ban: Ban members
-  unban: Unban members
-  tempban: Temporarily ban members
+  ban: Ban users
+  unban: Unban users
+
+ban:
+  success:
+    title: "Successfully banned user!"
+    info: "Banned {user} until {end} with reason `{reason}`"
+    until_date: "<t:{timestamp:.0f}:F>"
+    until_eternity: "`they get unbanned`"
+  failure:
+    title: "Failed to ban user!"
+    missing_permissions: "Unable to ban {user}!"
+    hierarchie: "Respect the hierarchie! *You aren't higher then {user}!*"
+
+unban:
+  success:
+    title: "Successfully unbanned user!"
+    info: "Unbanned {user} with reason `{reason}`"
+  failure:
+    title: "Failed to unban user!"
+    not_banned: "User {user} isn't banned on this server!"
+    missing_permissions: "Unable to unban {user}!"

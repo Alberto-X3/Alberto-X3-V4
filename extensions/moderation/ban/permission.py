@@ -13,4 +13,3 @@ class BanPermission(BasePermission):
 
     ban = auto()
     unban = auto()
-    tempban = auto()

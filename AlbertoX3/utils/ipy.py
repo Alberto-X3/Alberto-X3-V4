@@ -41,10 +41,10 @@ def get_embed(
         color=color,
         url=url,
         timestamp=timestamp,
-        fields=fields,
+        fields=fields or [],
         author=author,
         thumbnail=thumbnail,
-        images=images,
+        images=images or [],
         footer=footer,
     )
 

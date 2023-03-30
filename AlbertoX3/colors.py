@@ -156,6 +156,7 @@ class AllColors(FlatUIColors, MaterialColors):
     warning: int = MaterialColors.yellow["a200"]
     assertion: int = MaterialColors.orange[900]
     notimplemented: int = MaterialColors.lightblue[900]
+    missing_permissions: int = MaterialColors.indigo["a700"]
 
     blurple: int = 0x5865F2
     blurple_legacy: int = 0x7289DA

@@ -79,7 +79,6 @@ default_permission_overrides:
   moderation:
     ban: administrator
     unban: administrator
-    tempban: administrator
 
     delete: supporter
 

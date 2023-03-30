@@ -1,11 +1,3 @@
-"""
-This file only contains essential contents from "./utils.py".
-It was created to avoid circular imports inside AlbertoX3 itself.
-
-**Everything in here is considered part of "AlbertoX3.utils"!**
-"""
-
-
 __all__ = (
     "get_logger",
     "get_bool",
@@ -17,22 +9,10 @@ from vendor.AlbertUnruhUtils.utils.logger import (
     _LOG_LEVEL_STR,  # noqa (_LOG_LEVEL_STR is not in __all__)
 )
 from logging import Logger
-from typing import Callable, Optional, ParamSpec, TypeVar, Union
-from .errors import UnrecognisedBooleanError
+from typing import Optional, Union
+from ..errors import UnrecognisedBooleanError
 
 
-# only used for metadata
-_T = TypeVar("_T")
-_P = ParamSpec("_P")
-_FUNC = Callable[_P, _T]
-
-
-def _utils(func: _FUNC) -> _FUNC:
-    func.__module__ = f"{__package__}.utils"
-    return func
-
-
-@_utils
 def get_logger(name: Optional[str] = None, level: Optional[_LOG_LEVEL_STR | int] = None) -> Logger:
     """
     Gets a logger.
@@ -64,7 +44,6 @@ def get_logger(name: Optional[str] = None, level: Optional[_LOG_LEVEL_STR | int]
     return auu_get_logger(name=name, level=level, add_handler=False)
 
 
-@_utils
 def get_bool(obj: Union[bool, int, str, object], /) -> bool:
     """
     Currently matches:

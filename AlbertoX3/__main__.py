@@ -8,7 +8,7 @@ from AlbertoX3.constants import Config, LIB_PATH
 from AlbertoX3.database import db, redis
 from AlbertoX3.environment import TOKEN
 from AlbertoX3.translations import load_translations
-from AlbertoX3.utils import load_extensions, get_extensions
+from AlbertoX3.utils.extensions import load_extensions, get_extensions
 
 
 Config(LIB_PATH.parent.joinpath("config.alberto-x3.yml"))

@@ -16,7 +16,7 @@ from AlbertoX3.constants import Config
 from AlbertoX3.environment import OWNER_ID
 from AlbertoX3.ipy_wrapper import Extension
 from AlbertoX3.permission import permission_override
-from AlbertoX3.utils import get_logger
+from AlbertoX3.utils.essentials import get_logger
 
 
 logger = get_logger()

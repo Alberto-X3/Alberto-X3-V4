@@ -13,7 +13,8 @@ from interactions.models.discord.user import Member, User
 from AlbertoX3.converters import DurationConverter
 from AlbertoX3.ipy_wrapper import Extension
 from AlbertoX3.translations import TranslationNamespace, t  # type: ignore
-from AlbertoX3.utils import get_logger, get_utcnow
+from AlbertoX3.utils.essentials import get_logger
+from AlbertoX3.utils.general import get_utcnow
 
 from .db import BanModel, UnbanModel
 from .permission import BanPermission

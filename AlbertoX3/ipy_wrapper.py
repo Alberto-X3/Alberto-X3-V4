@@ -9,7 +9,7 @@ from interactions.models.internal.tasks.task import Task as ipy_Task
 from typing import TypeVar, ParamSpec, Callable, Awaitable, TypedDict, Required, Any
 from .database import db_wrapper
 from .translations import language_wrapper
-from .utils import get_logger
+from .utils.essentials import get_logger
 
 
 logger = get_logger()

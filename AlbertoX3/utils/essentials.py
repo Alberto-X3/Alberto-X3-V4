@@ -35,7 +35,7 @@ def get_logger(name: Optional[str] = None, level: Optional[_LOG_LEVEL_STR | int]
 
         frame = getattr(inspect.currentframe(), "f_back", None)
         if frame is not None:
-            if (pkg := frame.f_globals["__package__"]) == __package__:  # == "AlbertoX3"
+            if (pkg := frame.f_globals["__package__"]).startswith(__package__.split(".", maxsplit=1)[0]):
                 name = frame.f_globals["__name__"].split(".", maxsplit=1)[-1]
             else:
                 # remove extension folder

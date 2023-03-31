@@ -34,12 +34,9 @@ class BanModel(Base):
         )
 
     @staticmethod
-    async def get_next_to_check() -> "BanModel":
-        next_until = await db.first(
-            # select(func.min(BanModel.until)).filter(BanModel.until >= get_utcnow()).filter_by(until_checked=False)
-            # get the first unchecked one instead of the next one to unban
-            select(func.min(BanModel.until)).filter_by(until_checked=False)
-        )
+    async def get_next_to_check() -> "BanModel | None":
+        if (next_until := await db.first(select(func.min(BanModel.until)).filter_by(until_checked=False))) is None:
+            return None
         return await db.get(BanModel, until=next_until)  # type: ignore
 
 

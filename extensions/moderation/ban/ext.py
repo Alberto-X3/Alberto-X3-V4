@@ -44,7 +44,11 @@ class Ban(Extension):
         await self.reschedule_unban_task()
 
     async def reschedule_unban_task(self) -> None:
-        date = cast(datetime, (await BanModel.get_next_to_check()).until)
+        if (next_check := await BanModel.get_next_to_check()) is None:
+            logger.info("Not rescheduling unban-task: Nothing to do")
+            # wait until next rescheduling is triggered
+            return
+        date = next_check.until
         # need to do some magic (get the timedelta) to make the date from aware to naive
         self.unban_task.reschedule(DateTrigger(datetime.now() + (date - get_utcnow())))
         if self.unban_task.next_run is None:

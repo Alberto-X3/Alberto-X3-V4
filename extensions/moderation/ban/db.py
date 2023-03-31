@@ -3,11 +3,11 @@ __all__ = (
     "UnbanModel",
 )
 
-
-from AlbertoX3.database import Base, UTCDatetime, db
+from AlbertoX3.database import Base, UTCDatetime, db, select
 from datetime import datetime
+from sqlalchemy.sql.functions import func
 from sqlalchemy.sql.schema import Column
-from sqlalchemy.sql.sqltypes import BigInteger, Integer, Text
+from sqlalchemy.sql.sqltypes import BigInteger, Integer, Text, Boolean
 
 
 class BanModel(Base):
@@ -19,6 +19,7 @@ class BanModel(Base):
     timestamp: Column | datetime = Column(UTCDatetime, nullable=False)
     reason: Column | str = Column(Text(128), nullable=False)
     until: Column | datetime = Column(UTCDatetime, nullable=True)
+    until_checked: Column | bool = Column(Boolean, default=False, nullable=False)
 
     @staticmethod
     async def add(member: int, executor: int, reason: str, until: datetime | None) -> "BanModel":
@@ -31,6 +32,15 @@ class BanModel(Base):
                 until=until,
             )
         )
+
+    @staticmethod
+    async def get_next_to_check() -> "BanModel":
+        next_until = await db.first(
+            # select(func.min(BanModel.until)).filter(BanModel.until >= get_utcnow()).filter_by(until_checked=False)
+            # get the first unchecked one instead of the next one to unban
+            select(func.min(BanModel.until)).filter_by(until_checked=False)
+        )
+        return await db.get(BanModel, until=next_until)  # type: ignore
 
 
 class UnbanModel(Base):

@@ -18,7 +18,4 @@ class DurationConverter(timedelta):
 
         delta = result.time - datetime.utcnow()
 
-        if delta <= timedelta(seconds=1):  # delta is around 0 or negative -> can't be good
-            raise BadArgument
-
         return delta

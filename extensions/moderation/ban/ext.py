@@ -56,7 +56,7 @@ class Ban(Extension):
             #                                *which idiot bans someone for a few seconds?!
             idiot_notice = "" if self.unban_task.iteration == 0 else " Which idiot bans that short?!?!?!"
             logger.warning("Rescheduling unban-task now!" + idiot_notice)  # yes, it has to be
-            self.unban_task._fire(datetime.now())  # noqa
+            self.unban_task.reschedule(IntervalTrigger(seconds=10))  # allow some timeout
         else:
             logger.info(f"Rescheduled unban-task: {self.unban_task.next_run}")
 

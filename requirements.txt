@@ -10,5 +10,5 @@ aiomysql~=0.1.1
 interactions[speedup,sentry] @ git+https://github.com/interactions-py/interactions.py.git@5.x
 python-dotenv~=1.0.0
 PyYAML~=6.0
-redis~=4.5.3
+redis~=4.5.4
 sqlalchemy~=2.0.8

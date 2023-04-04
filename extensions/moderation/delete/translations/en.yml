@@ -1,0 +1,24 @@
+permissions:
+  delete: Delete messages
+
+delete:
+  success:
+    title: "Successfully deleted messages!"
+    info:
+      a:
+        zero: "Deleted no message in {channel}"
+        one: "Deleted {count} message in {channel}"
+        many: "Deleted {count} messages in {channel}"
+      b:
+        zero: "Deleted no message by {user} in {channel}"
+        one: "Deleted {count} message in {channel} by {user}"
+        many: "Deleted {count} messages in {channel} by {user}"
+      c: "Deleted a message in {channel}"
+      d:
+        zero: "Deleted no messages in {channel} from <t:{timestamp}:F> to <t:{now}:F>"
+        one: "Deleted {count} message in {channel} from <t:{timestamp}:F> to <t:{now}:F>"
+        many: "Deleted {count} messages in {channel} from <t:{timestamp}:F> to <t:{now}:F>"
+  failure:
+    title: "Failed to delete messages!"
+    missing_permissions: "Unable to delete messages in {channel}!"
+    no_channel_access: "..."

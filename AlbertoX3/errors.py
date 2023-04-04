@@ -1,6 +1,7 @@
 __all__ = (
     "AlbertoX3Error",
     "DeveloperError",
+    "InternalNotImplementedError",
     "DeveloperArgumentError",
     "UnrecognisedPermissionLevelError",
     "InvalidPermissionLevelError",
@@ -33,6 +34,17 @@ class AlbertoX3Error(Exception):
 
 class DeveloperError(AlbertoX3Error):
     pass
+
+
+class InternalNotImplementedError(DeveloperError, NotImplementedError):
+    func_o_meth_o_mod: str
+    """--> Function or Method or Module"""
+
+    def __init__(self, func_o_meth_o_mod: str):
+        self.func_o_meth_o_mod = func_o_meth_o_mod
+
+    def __str__(self) -> str:
+        return f"{self.func_o_meth_o_mod} is not implemented!"
 
 
 class DeveloperArgumentError(DeveloperError):

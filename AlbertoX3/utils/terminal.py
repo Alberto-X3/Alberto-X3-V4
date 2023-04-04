@@ -11,6 +11,7 @@ from ..constants import LIB_PATH
 
 
 _VERSION_REGEX: re.Pattern[str] = re.compile(r"^__version__\s*=\s*[\'\"]([^\'\"]*)[\'\"]", re.MULTILINE)
+_CLEAN_VERSION_REGEX: re.Pattern[str] = re.compile(r"^([^+]*)")
 
 
 def get_lib_version() -> str:
@@ -19,6 +20,9 @@ def get_lib_version() -> str:
     if (result := _VERSION_REGEX.search(file)) is None:
         version = "0.0.0"
     else:
+        version = result.group(1)
+
+    if (result := _CLEAN_VERSION_REGEX.match(version)) is not None:
         version = result.group(1)
 
     try:

@@ -51,7 +51,14 @@ def get_lib_version() -> str:
     return version
 
 
-notice = f"  # last updated: {datetime.datetime.utcnow()} UTC"
+def main():
+    notice = f"  # last updated: {datetime.datetime.utcnow()} UTC"
 
-new_file = _VERSION_REGEX.sub(rf"\g<1>{get_lib_version()}\g<3>{notice}", FILE.read_text("utf-8"), 1)
-FILE.write_text(new_file, "utf-8")
+    new_file = _VERSION_REGEX.sub(rf"\g<1>{get_lib_version()}\g<3>{notice}", FILE.read_text("utf-8"), 1)
+    FILE.write_text(new_file, "utf-8")
+
+    return 0
+
+
+if __name__ == "__main__":
+    exit(main())

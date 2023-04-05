@@ -1,5 +1,5 @@
 __author__ = "AlbertUnruh"
-__version__ = "0.0.0a+33+g9554afd"  # last updated: 2023-04-04 14:13:44.551023 UTC
+__version__ = "0.0.0a+34+g06666fa"  # last updated: 2023-04-05 10:51:23.520703 UTC
 __license__ = "GNU AGPLv3"
 __copyright__ = f"Copyright 2023-present (c) {__author__} - Alberto-X3"
 __url__ = "https://github.com/Alberto-X3/Alberto-X3-V4"

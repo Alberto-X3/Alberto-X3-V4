@@ -13,7 +13,7 @@ repos:
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
   - repo: https://github.com/PyCQA/autoflake
-    rev: v2.1.0
+    rev: v2.1.1
     hooks:
       - id: autoflake
         args: [--remove-all-unused-imports, --in-place, --ignore-init-module-imports]
@@ -51,7 +51,7 @@ repos:
         language_version: python3.11
 
   - repo: https://github.com/kumaraditya303/mirrors-pyright
-    rev: "v1.1.303"
+    rev: "v1.1.304"
     hooks:
       - id: pyright
         args: [--warnings]

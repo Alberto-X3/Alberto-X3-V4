@@ -39,9 +39,8 @@ repos:
           - flake8-raise
           - flake8-deprecated
           - flake8-print
-          # - flake8-dunder-all  # plugin code for `flake8-dunder-all[DALL]` does not match ^[A-Z]{1,3}[0-9]{0,3}$
-          # using fix from @Aspect1103 instead (PR isn't merged yet)
-          - git+https://github.com/Aspect1103/flake8-dunder-all.git@flake8-regex-fix
+          - flake8-dunder-all
+          # - git+https://github.com/Aspect1103/flake8-dunder-all.git@flake8-regex-fix  # repo deleted :/
           - flake8-pyi
           - flake8-debugger
           - flake8-builtins

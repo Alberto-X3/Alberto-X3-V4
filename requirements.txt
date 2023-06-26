@@ -5,7 +5,7 @@
 
 
 # all AlbertoX3-core requirements
-aenum~=3.1.12
+aenum~=3.1.14
 aiomysql~=0.2.0
 interactions[speedup,sentry] @ git+https://github.com/interactions-py/interactions.py.git@5.x
 python-dotenv~=1.0.0

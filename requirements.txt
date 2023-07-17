@@ -11,4 +11,4 @@ interactions[speedup,sentry] @ git+https://github.com/interactions-py/interactio
 python-dotenv~=1.0.0
 PyYAML~=6.0
 redis~=4.6.0
-sqlalchemy~=2.0.17
+sqlalchemy~=2.0.19

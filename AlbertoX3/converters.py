@@ -31,7 +31,7 @@ class IntConverter(int):
     max: int = None  # noqa: A003
 
     @classmethod
-    def with_range(cls, min: int, max: int) -> Self:  # noqa: A003
+    def with_range(cls, min: int, max: int) -> Self:  # noqa: A002
         if min > max:
             raise DeveloperArgumentError(f"min is higher than max! {min} > {max}")
         converter = cls()

@@ -81,7 +81,7 @@ extend-ignore =
 
 exclude = .git,__pycache__,vendor/*
 max-line-length = 120
-known-modules = :[vendor,AlbertoX3]
+known-modules = :[vendor,AlbertoX3,interactions]
 per-file-ignores =
     tests/test_*.py:ANN201
     AlbertoX3/__main__.py:DAL000

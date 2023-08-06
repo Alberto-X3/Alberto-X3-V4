@@ -1,7 +1,7 @@
 __all__ = ("Delete",)
 
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import cast
 
 from interactions.client.errors import HTTPException
@@ -10,17 +10,11 @@ from interactions.ext.prefixed_commands.context import PrefixedContext
 from interactions.ext.prefixed_commands.manager import PrefixedInjectedClient
 from interactions.models.discord.message import Message
 from interactions.models.discord.snowflake import Snowflake
-from interactions.models.discord.user import User, Member
-from interactions.models.internal.checks import guild_only
-from interactions.models.internal.command import check
-from interactions.models.internal.listener import listen
-from interactions.models.internal.tasks.task import Task
-from interactions.models.internal.tasks.triggers import IntervalTrigger, DateTrigger
+from interactions.models.discord.user import User
 
 from AlbertoX3.constants import Config
 from AlbertoX3.converters import DurationConverter, IntConverter
 from AlbertoX3.errors import InternalNotImplementedError
-from AlbertoX3.database import db, filter_by
 from AlbertoX3.ipy_wrapper import Extension
 from AlbertoX3.translations import TranslationNamespace, t  # type: ignore
 from AlbertoX3.utils.essentials import get_logger
@@ -55,7 +49,7 @@ class Delete(Extension):
         #   B: amount > 0 and <type>mode == User --> delete N message from user
         #   C: <type>mode == Message --> delete specified message
         #   D: <type>mode == timedelta --> delete all message in the past interval
-        print(amount, mode, sep="\n")  # ToDo: remove in future
+
         reason = f"Initiated by {ctx.author.tag}"
         title = t.delete.success.title
         color = Colors.delete
@@ -66,7 +60,7 @@ class Delete(Extension):
                 count = await ctx.channel.purge(
                     deletion_limit=amount,
                     search_limit=0,
-                    avoid_loading_msg=False,
+                    avoid_loading_msg=Config.MESSAGES_AVOID_LOADING_MSG,
                     predicate=lambda m: m.author.id == mode.id,
                     reason=reason,
                 )
@@ -94,7 +88,7 @@ class Delete(Extension):
             count = await ctx.channel.purge(
                 deletion_limit=limit,
                 search_limit=limit,
-                avoid_loading_msg=False,
+                avoid_loading_msg=Config.MESSAGES_AVOID_LOADING_MSG,
                 predicate=lambda m: m.id > border_timestamp,
                 reason=reason,
             )

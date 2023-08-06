@@ -75,6 +75,8 @@ class Config:
     PERMISSION_DEFAULT_LEVEL: Absent["BasePermissionLevel"] = MISSING
     PERMISSION_LEVELS: Absent[type["BasePermissionLevel"]] = MISSING
     PERMISSION_LEVEL_TEAM: Absent["PermissionLevel"] = MISSING
+    # random stuff
+    MESSAGES_AVOID_LOADING_MSG: Absent[bool] = MISSING
 
     def __new__(cls, path: Path):
         # due to circular imports
@@ -145,6 +147,9 @@ class Config:
             permission_level_default_raw=config.get("default_permission_level", "owner"),
             permission_default_overrides_raw=config.get("default_permission_overrides", {}),
         )  # a bit more logic is needed to load the config
+
+        # stuff
+        cls.MESSAGES_AVOID_LOADING_MSG = get_bool(config.get("messages_avoid_loading_msg", True))
 
         # getting the instance
         if not cls._instance:

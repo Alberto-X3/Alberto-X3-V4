@@ -8,7 +8,7 @@
 aenum~=3.1.12
 aiomysql~=0.1.1
 cryptography~=40.0.1
-interactions[speedup,sentry] @ git+https://github.com/interactions-py/interactions.py.git@5.x
+interactions-py[speedup,sentry] @ git+https://github.com/interactions-py/interactions.py.git@unstable
 python-datetimeparser @ git+https://github.com/aridevelopment-de/datetimeparser.git@dev
 python-dotenv~=1.0.0
 PyYAML~=6.0

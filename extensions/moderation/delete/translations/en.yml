@@ -22,3 +22,4 @@ delete:
     title: "Failed to delete messages!"
     missing_permissions: "Unable to delete messages in {channel}!"
     no_channel_access: "..."
+    invalid_configuration: "Something went wrong with your configuration..."

@@ -33,8 +33,7 @@ class ExtensionFeaturesGenerator(ABC):
     """
 
     @abstractmethod
-    def _has(self, i: int) -> bool:
-        ...
+    def _has(self, i: int) -> bool: ...
 
     def __init_subclass__(cls) -> None:
         if cls.__base__ != ExtensionFeaturesGenerator:

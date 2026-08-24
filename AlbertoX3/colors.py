@@ -11,7 +11,6 @@ from yaml import safe_load
 from .constants import LIB_PATH
 from .utils.essentials import get_logger
 
-
 logger = get_logger()
 T = TypeVar("T")
 

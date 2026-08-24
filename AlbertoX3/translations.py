@@ -21,7 +21,6 @@ from .misc import FormatStr, PrimitiveExtension
 from .utils.essentials import get_logger
 from .utils.general import get_language
 
-
 logger = get_logger()
 T = TypeVar("T")
 P = ParamSpec("P")

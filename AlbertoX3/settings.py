@@ -14,7 +14,6 @@ from .aio import LockDeco
 from .database import Base, db, redis
 from .environment import CACHE_TTL
 
-
 _VALUE = str | int | float | bool
 
 

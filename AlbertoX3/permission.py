@@ -22,7 +22,6 @@ from .database import Base, db, redis
 from .environment import CACHE_TTL
 from .errors import UnrecognisedPermissionLevelError
 
-
 permission_override: ContextVar["BasePermissionLevel"] = ContextVar("permission_override")
 
 

@@ -25,7 +25,6 @@ from os import environ, getenv
 from typing import cast
 from .utils.essentials import get_bool
 
-
 load_dotenv()
 
 

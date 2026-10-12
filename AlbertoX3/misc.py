@@ -13,7 +13,6 @@ from pathlib import Path
 from typing import Callable, Iterable, Literal
 from .utils.essentials import get_logger
 
-
 logger = get_logger()
 
 
@@ -33,8 +32,7 @@ class ExtensionFeaturesGenerator(ABC):
     """
 
     @abstractmethod
-    def _has(self, i: int) -> bool:
-        ...
+    def _has(self, i: int) -> bool: ...
 
     def __init_subclass__(cls) -> None:
         if cls.__base__ != ExtensionFeaturesGenerator:

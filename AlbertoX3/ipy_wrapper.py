@@ -10,7 +10,6 @@ from .database import db_wrapper
 from .translations import language_wrapper
 from .utils.essentials import get_logger
 
-
 logger = get_logger()
 T = TypeVar("T")
 P = ParamSpec("P")

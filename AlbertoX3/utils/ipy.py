@@ -10,7 +10,6 @@ from interactions.models.discord.user import Member, User
 from interactions.models.internal.context import BaseContext
 from typing import Optional
 
-
 _ID_REGEX: re.Pattern[str] = re.compile(r"^([1-9]\d{6,19})$")
 _MENTION_REGEX: re.Pattern[str] = re.compile(r"^<@!?([1-9]\d{6,19})>$")
 _NAME_REGEX: re.Pattern[str] = re.compile(r"^(.{2,32})#(\d{4})$")

@@ -19,7 +19,6 @@ from ..misc import EXTENSION_FEATURES, PrimitiveExtension
 from .essentials import get_logger
 from .terminal import get_installed_libraries
 
-
 logger = get_logger()
 T = TypeVar("T")
 C = TypeVar("C", bound=type[object])

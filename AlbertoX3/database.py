@@ -54,7 +54,6 @@ from .environment import (
 from .errors import NoActiveSessionError
 from .utils.essentials import get_logger
 
-
 logger = get_logger()
 T = TypeVar("T")
 P = ParamSpec("P")

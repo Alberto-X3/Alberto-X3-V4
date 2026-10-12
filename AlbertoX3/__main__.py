@@ -6,7 +6,6 @@ from AlbertoX3 import __root_logger__
 from AlbertoX3.environment import TOKEN
 from AlbertoX3.utils.extensions import load_extensions, get_extensions
 
-
 bot = Client(
     token=TOKEN,
     intents=Intents.ALL,  # Intent.ALL is very bad practice!!!

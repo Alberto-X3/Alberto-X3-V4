@@ -5,7 +5,6 @@ from aenum import NoAliasEnum
 from typing import Optional
 from .errors import DeveloperArgumentError
 
-
 _FALSE: frozenset[str] = frozenset(
     {"0", "-1", "none", "nan", "false", "/", "()", "[]", "{}", "set()", "missing", "notset"}
 )

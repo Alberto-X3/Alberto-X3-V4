@@ -9,7 +9,6 @@ import subprocess  # noqa S404
 
 from ..constants import LIB_PATH
 
-
 _VERSION_REGEX: re.Pattern[str] = re.compile(r"^__version__\s*=\s*[\'\"]([^\'\"]*)[\'\"]", re.MULTILINE)
 
 

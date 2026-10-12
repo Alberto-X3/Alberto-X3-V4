@@ -17,7 +17,6 @@ from typing import Awaitable, Callable, Generic, Literal, ParamSpec, TypeVar, ca
 from .constants import MISSING
 from .errors import GatherAnyError
 
-
 T = TypeVar("T")
 P = ParamSpec("P")
 
